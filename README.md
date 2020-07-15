@@ -1,1 +1,4 @@
-# action-delrelease
+
+# Usage
+
+See [action.yml](action.yml)

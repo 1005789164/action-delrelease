@@ -1,0 +1,30 @@
+name: Github Release del
+description: Github Action to del to Github Releases
+author: 'Jun Ma'
+
+inputs:
+  # Exposed Github API inputs (identical to ones consumed by Github API):
+  #   https://developer.github.com/v3/repos/releases
+  # NOTE: No defaults set for these, to avoid override on update due to the impossibility
+  #       of distinguishing between default, and user input.
+  token:
+    description: Github API token to be used. Quite crucial, I'm afraid.
+    required: true
+
+  name:
+    description: >
+      Place to name the release, the more creative, the better, Listed as: A1 A2 p1 p2 abd123, or all means delete all, if there is no release, only tag can be directly entered.
+    required: true
+
+  istag:
+    description: Whether to delete along with the release.
+    required: false
+    default: false
+
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+
+branding:
+  color: 'green'
+  icon: 'anchor'
