@@ -70,7 +70,7 @@ else
 		$BASE_URL
 	)"
 
-	if [ "$CODE" == "200" -a -n "$(jq -r '.[].url | select(. != null)' <"/tmp/allres.json")" ]; then
+	if [ "$CODE" == "200" -a -n "$(jq -r '.[].url | select(. != null)' < "/tmp/allres.json" | tr '\n' ' ')" ]; then
 		jq -r '.[].tag_name' >/tmp/alltags.json <"/tmp/allres.json"
 
 		for entry in "$(jq -r '.[].url' <"/tmp/allres.json")"; do
