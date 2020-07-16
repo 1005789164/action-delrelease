@@ -74,7 +74,6 @@ else
 		jq -r '.[].tag_name' >/tmp/alltags.json <"/tmp/allres.json"
 
 		for  entry in "$(jq -r '.[].url' <"/tmp/allres.json" | tr ' ' '\n' )"; do
-		do
 			if [ "$(deleteRes "$entry" '/tmp/httpcode.json')" == "204" ]; then
 				printf "\nDel release %s success" "$entry"
 			else
