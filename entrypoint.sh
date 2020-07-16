@@ -40,6 +40,7 @@ ISTAG="$(echo ${ISTAG} | tr -d \" | tr '[a-z]' '[A-Z]')"
 BASE_URL="https://api.github.com/repos/${GITHUB_REPOSITORY}/releases"
 
 if [ -z "$(echo ${NAME} | grep "all")" -a -z "$(echo ${NAME} | grep "ALL")" ]; then
+echo 111111111111111111111111111
   BASE_URL=$BASE_URL/tags
   for entry in ${NAME}; do
     RELEASE_URL="$(curl -sS -H "Authorization: token ${TOKEN}" \
@@ -73,6 +74,7 @@ else
 
   jq -r '.[].tag_name' > /tmp/alltags.json < "/tmp/allres.json"
 
+  echo 222222222222222
   for entry in "$(jq -r '.[].url' < "/tmp/allres.json")"; do
     if [ "deleteRes $entry '/tmp/code.json'" == "204" ]; then
 	printf "\nDel release %s success\n" "$entry"
