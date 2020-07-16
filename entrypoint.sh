@@ -66,30 +66,26 @@ else
     --write-out "%{http_code}" -o "/tmp/allres.json" \
     $BASE_URL)"
 
-  if [ "$CODE" != "200" ]; then
-    >&2 printf "\n\tERR: del to Github release has failed\n"
-    >&2 jq < "/tmp/allres.json"
-    exit 1
-  fi
+  if [ "$CODE" == "200" ]; then
+	    jq -r '.[].tag_name' > /tmp/alltags.json < "/tmp/allres.json"
 
-  jq -r '.[].tag_name' > /tmp/alltags.json < "/tmp/allres.json"
+	  for entry in "$(jq -r '.[].url' < "/tmp/allres.json")"; do
+	    if [ "$(deleteRes "$entry" '/tmp/httpcode.json')" == "204" ]; then
+		printf "\nDel release %s success" "$entry"
+	    else
+		printf "\nDel release %s failure: %s\n" "$entry" "`jq < /tmp/httpcode.json`"
+	    fi
+	  done
 
-  for entry in "$(jq -r '.[].url' < "/tmp/allres.json")"; do
-    if [ "$(deleteRes "$entry" '/tmp/httpcode.json')" == "204" ]; then
-	printf "\nDel release %s success" "$entry"
-    else
-	printf "\nDel release %s failure: %s\n" "$entry" "`jq < /tmp/httpcode.json`"
-    fi
-  done
-
-  if [ ${ISTAG} == "YES" ]; then
-    for entry in "`cat '/tmp/alltags.json'`"; do
-	if [ "$(deleteRes "https://api.github.com/repos/${GITHUB_REPOSITORY}/git/refs/tags/$entry" '/tmp/httpcode.json')" == "204" ]; then
-	  printf "\nDel tag %s success" "$entry"
-	else
-	  printf "\nDel tag %s failure: %s\n" "$entry" "`jq < /tmp/httpcode.json`"
-	fi
-    done
+	  if [ ${ISTAG} == "YES" ]; then
+	    for entry in "`cat '/tmp/alltags.json'`"; do
+		if [ "$(deleteRes "https://api.github.com/repos/${GITHUB_REPOSITORY}/git/refs/tags/$entry" '/tmp/httpcode.json')" == "204" ]; then
+		  printf "\nDel tag %s success" "$entry"
+		else
+		  printf "\nDel tag %s failure: %s\n" "$entry" "`jq < /tmp/httpcode.json`"
+		fi
+	    done
+	  fi
   fi
 
   for entry in ${NAME}; do
