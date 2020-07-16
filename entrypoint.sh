@@ -37,7 +37,6 @@ function deleteRes() {
 		--write-out "%{http_code}" -o $2 \
 		$1
 	)"
-	sleep 1
 	echo $CODE
 }
 
@@ -70,9 +69,9 @@ else
 		--write-out "%{http_code}" -o "/tmp/allres.json" \
 		$BASE_URL
 	)"
-	cat /tmp/allres.json
 
-	if [ "$CODE" == "200" ]; then
+	if [ "$CODE" == "200" -a -n "$(jq -r '.[].url | select(. != null)' < "/tmp/allres.json")" ]; then
+		echo "--------------------"
 		jq -r '.[].tag_name' >/tmp/alltags.json <"/tmp/allres.json"
 
 		for entry in "$(jq -r '.[].url' <"/tmp/allres.json")"; do
