@@ -45,7 +45,7 @@ if [ -z "$(echo ${NAME} | grep "all")" -a -z "$(echo ${NAME} | grep "ALL")" ]; t
     RELEASE_URL="$(curl -sS -H "Authorization: token ${TOKEN}" \
       $BASE_URL/$entry | jq -r '.url | select(. != null)')"
     if [ -n "$RELEASE_URL" ]; then
-      if [ "$(deleteRes $RELEASE_URL '/tmp/httpcode.json')" == "204" ]; then
+      if [ "$(deleteRes "$RELEASE_URL" '/tmp/httpcode.json')" == "204" ]; then
         printf "\nDel release %s success" "$entry"
 	else
 	  printf "\nDel release %s failure: %s\n" "$entry" "`jq < /tmp/httpcode.json`"
@@ -74,7 +74,7 @@ else
   jq -r '.[].tag_name' > /tmp/alltags.json < "/tmp/allres.json"
 
   for entry in "$(jq -r '.[].url' < "/tmp/allres.json")"; do
-    if [ "$(deleteRes $entry '/tmp/httpcode.json')" == "204" ]; then
+    if [ "$(deleteRes "$entry" '/tmp/httpcode.json')" == "204" ]; then
 	printf "\nDel release %s success" "$entry"
     else
 	printf "\nDel release %s failure: %s\n" "$entry" "`jq < /tmp/httpcode.json`"
