@@ -90,7 +90,7 @@ else
 				else
 					printf "\nDel tag %s failure: %s\n" "$entry" "$(jq </tmp/httpcode.json)"
 				fi
-			done <"$(cat '/tmp/alltags.json')"
+			done </tmp/alltags.json
 		fi
 	fi
 
