@@ -70,6 +70,7 @@ else
 		--write-out "%{http_code}" -o "/tmp/allres.json" \
 		$BASE_URL
 	)"
+	cat /tmp/allres.json
 
 	if [ "$CODE" == "200" ]; then
 		jq -r '.[].tag_name' >/tmp/alltags.json <"/tmp/allres.json"
