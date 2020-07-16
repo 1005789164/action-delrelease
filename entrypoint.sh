@@ -73,7 +73,7 @@ else
 	if [ "$CODE" == "200" -a -n "$(jq -r '.[].url' <"/tmp/allres.json" | tr '\n' ' ')" ]; then
 		jq -r '.[].tag_name' >/tmp/alltags.json <"/tmp/allres.json"
 
-		for  entry in $(jq -r '.[].url' /tmp/allres.json | tr ' ' '\n' ); do
+		for  entry in $(jq -r '.[].url' </tmp/allres.json | tr ' ' '\n' ); do
 			if [ "$(deleteRes "$entry" '/tmp/httpcode.json')" == "204" ]; then
 				printf "\nDel release %s success" "$entry"
 			else
