@@ -31,25 +31,27 @@ ISTAG="$(echo ${ISTAG} | tr -d \" | tr '[a-z]' '[A-Z]')"
 BASE_URL="https://api.github.com/repos/${GITHUB_REPOSITORY}/releases"
 
 if [[ "${NAME}" != *"all"* ]] || [[ "${NAME}" != *"ALL"* ]]; then
-  BASE_URL=${BASE_URL}/tags
+  BASE_URL=$BASE_URL/tags
   for entry in ${NAME}; do
     RELEASE_URL="$(curl -sS -H "Authorization: token ${TOKEN}" \
       $BASE_URL/$entry | jq -r '.url | select(. != null)')"
     if [ -z $RELEASE_URL ]; then
-      printf "\nNo release delete tag %s: %s\n\n" "$entry" "$(curl -sS -H 'Authorization: token ${TOKEN}' \
+      printf "\nNo release delete tag %s: %s\n" "$entry" "$(curl -sS -H 'Authorization: token ${TOKEN}' \
       -X DELETE \
       https://api.github.com/repos/${GITHUB_REPOSITORY}/git/refs/tags/$entry)"
     else
       printf "\nDel release %s: $(curl -sS -H 'Authorization: token ${TOKEN}' \
       -X DELETE \
-      $RELEASE_URL)\n\n" "$entry"
+      $RELEASE_URL)\n" "$entry"
     fi
 
     if [ -n $RELEASE_URL ] && [ ${ISTAG} == "YES" ]; then
-      printf "\nDel tag %s: %s\n\n" "$entry" "$(curl -sS -H 'Authorization: token ${TOKEN}' \
+      printf "\nDel tag %s: %s\n" "$entry" "$(curl -sS -H 'Authorization: token ${TOKEN}' \
       -X DELETE \
       https://api.github.com/repos/${GITHUB_REPOSITORY}/git/refs/tags/$entry)"
     fi
+    echo $BASE_URL
+    echo https://api.github.com/repos/${GITHUB_REPOSITORY}/git/refs/tags/$entry
   done
 else
   CODE="$(curl -sS -H "Authorization: token ${TOKEN}" \
@@ -64,14 +66,14 @@ else
 
   jq -r '.[].tag_name' > /tmp/alltags.json < "/tmp/allres.json"
   for entry in "$(jq -r '.[].url' < "/tmp/allres.json" | tr ' ' '\n')"; do
-    printf "\nDel release %s: %s\n\n" "$entry" "$(curl -sS -H 'Authorization: token ${TOKEN}' \
+    printf "\nDel release %s: %s\n" "$entry" "$(curl -sS -H 'Authorization: token ${TOKEN}' \
     -X DELETE \
     $entry)"
   done
 
   if [ ${ISTAG} == "YES" ]; then
     for entry in "$(cat "/tmp/alltags.json" | tr ' ' '\n')"; do
-      printf "\nDel tag %s: %s\n\n" "$entry" "$(curl -sS -H 'Authorization: token ${TOKEN}' \
+      printf "\nDel tag %s: %s\n" "$entry" "$(curl -sS -H 'Authorization: token ${TOKEN}' \
       -X DELETE \
       https://api.github.com/repos/${GITHUB_REPOSITORY}/git/refs/tags/$entry)"
     done
