@@ -32,8 +32,9 @@ ISTAG="$(echo ${ISTAG} | tr -d \" | tr '[a-z]' '[A-Z]')"
 BASE_URL="https://api.github.com/repos/${GITHUB_REPOSITORY}/releases"
 
 
-function deleteRes{
-	echo $1---$2
+function deleteRes()
+{
+    echo $1---$2
     CODE="$(curl -sS -H "Authorization: token ${TOKEN}" -X DELETE \
 	--write-out "%{http_code}" -o "$2" \
 	$1)"
