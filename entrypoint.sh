@@ -18,7 +18,8 @@ if [ -z "${NAME}" ]; then
   >&2 printf "\tNote: It's necessary to interact with Github's API.\n\n"
   exit 1
 fi
-NAME="$(echo ${NAME} | tr -d \")"
+NAME="$(echo ${NAME} | tr -d \" | tr ' ' '\n')"
+echo ${NAME}
 
 # Try getting $TAG from action input
 ISTAG="${INPUT_ISTAG}"
@@ -28,24 +29,22 @@ fi
 ISTAG="$(echo ${ISTAG} | tr -d \")"
 
 BASE_URL="https://api.github.com/repos/${GITHUB_REPOSITORY}/releases"
-echo $NAME
+
 if [[ "${NAME}" != *"all"* ]] || [[ "${NAME}" != *"ALL"* ]]; then
   BASE_URL=${BASE_URL}/tags
-  for entry in "$(echo ${NAME} | tr ' ' '\n')"; do
+  for entry in "echo ${NAME}"; do
+    echo $entry
     RELEASE_URL="$(curl -sS -H "Authorization: token ${TOKEN}" \
       ${BASE_URL}/$entry | jq -r '.url | select(. != null)')"
     curl -sS -H "Authorization: token ${TOKEN}" \
     -X DELETE \
     $RELEASE_URL
 
-    printf "\n111111111111111111111111111111\n\n"
     if [ ${ISTAG} == "yes" ] || [ ${ISTAG} == "YES" ]; then
       curl -sS -H "Authorization: token ${TOKEN}" \
       -X DELETE \
       https://api.github.com/repos/${GITHUB_REPOSITORY}/git/refs/tags/$entry
-	printf "\n2222222222222111\n\n"
     fi
-    printf "\n333333333311111\n\n"
   done
 else
   CODE="$(curl -sS -H "Authorization: token ${TOKEN}" \
