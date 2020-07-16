@@ -44,7 +44,7 @@ if [ -z "$(echo ${NAME} | grep "all")" -a -z "$(echo ${NAME} | grep "ALL")" ]; t
   for entry in ${NAME}; do
     RELEASE_URL="$(curl -sS -H "Authorization: token ${TOKEN}" \
       $BASE_URL/$entry | jq -r '.url | select(. != null)')"
-    if [ -n $RELEASE_URL ]; then
+    if [ -n "$RELEASE_URL" ]; then
       if [ "$(deleteRes $RELEASE_URL '/tmp/httpcode.json')" == "204" ]; then
         printf "\nDel release %s success\n" "$entry"
 	else
@@ -101,4 +101,4 @@ else
   done
 fi
 
->&2 echo "All done."
+>&2 echo "\nAll done."

@@ -17,9 +17,9 @@ inputs:
     required: true
 
   istag:
-    description: Whether to delete along with the release.
+    description: Whether to delete along with the release, no, yes.
     required: false
-    default: false
+    default: no
 
 runs:
   using: 'docker'
