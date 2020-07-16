@@ -101,4 +101,4 @@ else
   done
 fi
 
->&2 printf "\n\nAll done."
+>&2 printf "\nAll done."
