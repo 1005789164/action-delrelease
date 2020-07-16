@@ -12,6 +12,7 @@ if [ -z "${TOKEN}" ]; then
   exit 1
 fi
 
+# Try getting $NAME from action input
 NAME="${INPUT_NAME}"
 if [ -z "${NAME}" ]; then
   >&2 printf "\nERR: Invalid input: 'name' is required, and must be specified.\n"
@@ -35,21 +36,24 @@ if [[ "${NAME}" != *"all"* ]] || [[ "${NAME}" != *"ALL"* ]]; then
   for entry in ${NAME}; do
     RELEASE_URL="$(curl -sS -H "Authorization: token ${TOKEN}" \
       $BASE_URL/$entry | jq -r '.url | select(. != null)')"
-    echo ---$RELEASE_URL---
-    if [ -z $RELEASE_URL ]; then
-      printf "\nNo release delete tag %s: %s\n" "$entry" "$(curl -sS -H "Authorization: token ${TOKEN}" \
-      -X DELETE \
-      https://api.github.com/repos/${GITHUB_REPOSITORY}/git/refs/tags/$entry)"
-    else
-      printf "\nDel release %s: $(curl -sS -H "Authorization: token ${TOKEN}" \
-      -X DELETE \
-      $RELEASE_URL)\n" "$entry"
+    if [ -n $RELEASE_URL ]; then
+      CODE="$(curl -sS -H "Authorization: token ${TOKEN}" -X DELETE \
+        $RELEASE_URL | tr ' ' '\n')"
+      if [ -z $CODE ]; then
+        printf "\nDel release %s success\n" "$entry"
+	else
+	  printf "\nDel release %s failure: %s\n" "$entry" "$CODE"
+	fi
     fi
 
-    if [ ${ISTAG} == "YES" ]; then
-      printf "\nDel tag %s: %s\n" "$entry" "$(curl -sS -H "Authorization: token ${TOKEN}" \
-      -X DELETE \
-      https://api.github.com/repos/${GITHUB_REPOSITORY}/git/refs/tags/$entry)"
+    if [ "${ISTAG}" == "YES" -o -z $RELEASE_URL ]; then
+      CODE="$(curl -sS -H "Authorization: token ${TOKEN}" -X DELETE \
+        https://api.github.com/repos/${GITHUB_REPOSITORY}/git/refs/tags/$entry | tr ' ' '\n')"
+	if [ -z $CODE ]; then
+	  printf "\nDel tag %s success\n" "$entry"
+	else
+	  printf "\nDel tag %s success: %s\n" "$entry" "$CODE"
+	fi
     fi
   done
 else
