@@ -70,7 +70,7 @@ else
 		$BASE_URL
 	)"
 
-	if [ "$CODE" == "200" -a -n "$(jq -r '.[].url | select(. != null)' < "/tmp/allres.json")" ]; then
+	if [ "$CODE" == "200" -a -n "$(jq -r '.[].url | select(. != null)' <"/tmp/allres.json")" ]; then
 		jq -r '.[].tag_name' >/tmp/alltags.json <"/tmp/allres.json"
 
 		for entry in "$(jq -r '.[].url' <"/tmp/allres.json")"; do
@@ -95,7 +95,7 @@ else
 
 	for entry in ${NAME}; do
 		[ -n "$(echo $entry | grep "all")" -o -n "$(echo $entry | grep "ALL")" ] && continue
-		
+
 		if [ "$(deleteRes "https://api.github.com/repos/${GITHUB_REPOSITORY}/git/refs/tags/$entry" '/tmp/httpcode.json')" == "204" ]; then
 			printf "\nDel tag %s success" "$entry"
 		else
