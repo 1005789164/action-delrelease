@@ -95,6 +95,7 @@ else
 	fi
 
 	for entry in ${NAME}; do
+		echo "90909090909090909"
 		[ -n "$(echo ${NAME} | grep "all")" -o -n "$(echo ${NAME} | grep "ALL")" ] && continue
 		if [ "$(deleteRes "https://api.github.com/repos/${GITHUB_REPOSITORY}/git/refs/tags/$entry" '/tmp/httpcode.json')" == "204" ]; then
 			printf "\nDel tag %s success" "$entry"
