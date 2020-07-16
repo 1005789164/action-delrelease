@@ -70,26 +70,25 @@ else
 		$BASE_URL
 	)"
 
-	if [ "$CODE" == "200" -a -n "$(jq -r '.[].url | select(. != null)' <"/tmp/allres.json" | tr '\n' ' ')" ]; then
+	if [ "$CODE" == "200" -a -n "$(jq -r '.[].url' <"/tmp/allres.json" | tr '\n' ' ')" ]; then
 		jq -r '.[].tag_name' >/tmp/alltags.json <"/tmp/allres.json"
 
-		for entry in "$(jq -r '.[].url' <"/tmp/allres.json" | tr ' ' '\n')"; do
-			echo ---$entry---
+		while read entry; do
 			if [ "$(deleteRes "$entry" '/tmp/httpcode.json')" == "204" ]; then
 				printf "\nDel release %s success" "$entry"
 			else
 				printf "\nDel release %s failure: %s\n" "$entry" "$(jq </tmp/httpcode.json)"
 			fi
-		done
+		done <"$(jq -r '.[].url' <"/tmp/allres.json")"
 
 		if [ ${ISTAG} == "YES" ]; then
-			for entry in "$(cat '/tmp/alltags.json' | tr ' ' '\n')"; do
+			while read entry; do
 				if [ "$(deleteRes "https://api.github.com/repos/${GITHUB_REPOSITORY}/git/refs/tags/$entry" '/tmp/httpcode.json')" == "204" ]; then
 					printf "\nDel tag %s success" "$entry"
 				else
 					printf "\nDel tag %s failure: %s\n" "$entry" "$(jq </tmp/httpcode.json)"
 				fi
-			done
+			done <"$(cat '/tmp/alltags.json')"
 		fi
 	fi
 
