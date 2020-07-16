@@ -32,7 +32,7 @@ ISTAG="$(echo ${ISTAG} | tr -d \" | tr '[a-z]' '[A-Z]')"
 BASE_URL="https://api.github.com/repos/${GITHUB_REPOSITORY}/releases"
 
 
-deleteRes(){
+function deleteRes(){
 	echo $1---$2
     CODE="$(curl -sS -H "Authorization: token ${TOKEN}" -X DELETE \
 	--write-out "%{http_code}" -o "$2" \
@@ -88,7 +88,7 @@ else
 	if [ "deleteRes "https://api.github.com/repos/${GITHUB_REPOSITORY}/git/refs/tags/$entry" '/tmp/code.json'" == "204" ]; then
 	  printf "\nDel tag %s success\n" "$entry"
 	else
-	  printf "\nDel tag %s success: %s\n" "$entry" "`jq < /tmp/code.json`"
+	  printf "\nDel tag %s failure: %s\n" "$entry" "`jq < /tmp/code.json`"
 	fi
     done
   fi
@@ -98,7 +98,7 @@ else
     if [ "deleteRes "https://api.github.com/repos/${GITHUB_REPOSITORY}/git/refs/tags/$entry" '/tmp/code.json'" == "204" ]; then
 	  printf "\nDel tag %s success\n" "$entry"
 	else
-	  printf "\nDel tag %s success: %s\n" "$entry" "`jq < /tmp/code.json`"
+	  printf "\nDel tag %s failure: %s\n" "$entry" "`jq < /tmp/code.json`"
 	fi
   done
 fi
