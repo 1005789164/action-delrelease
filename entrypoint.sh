@@ -34,7 +34,6 @@ BASE_URL="https://api.github.com/repos/${GITHUB_REPOSITORY}/releases"
 
 function deleteRes()
 {
-    echo $1---$2
     CODE="$(curl -sS -H "Authorization: token ${TOKEN}" -X DELETE \
 	--write-out "%{http_code}" -o "$2" \
 	$1)"
@@ -42,8 +41,7 @@ function deleteRes()
 }
 
 
-if [[ "${NAME}" != *"all"* ]] || [[ "${NAME}" != *"ALL"* ]]; then
-  echo "1111"${NAME}
+if [ -z "$(echo ${NAME} | grep "all")" -a -z "$(echo ${NAME} | grep "ALL")" ]; then
   BASE_URL=$BASE_URL/tags
   for entry in ${NAME}; do
     RELEASE_URL="$(curl -sS -H "Authorization: token ${TOKEN}" \
@@ -96,8 +94,7 @@ else
   fi
 
   for entry in ${NAME}; do
-    echo "2222"${NAME}
-    [[ "$entry" == *"all"* ]] || [[ "$entry" == *"ALL"* ]] && continue
+    [ -n "$(echo ${NAME} | grep "all")" -o -n "$(echo ${NAME} | grep "ALL")" ] && continue
     if [ "deleteRes "https://api.github.com/repos/${GITHUB_REPOSITORY}/git/refs/tags/$entry" '/tmp/code.json'" == "204" ]; then
 	  printf "\nDel tag %s success\n" "$entry"
 	else
