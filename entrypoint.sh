@@ -46,15 +46,15 @@ if [ -z "$(echo ${NAME} | grep "all")" -a -z "$(echo ${NAME} | grep "ALL")" ]; t
       $BASE_URL/$entry | jq -r '.url | select(. != null)')"
     if [ -n "$RELEASE_URL" ]; then
       if [ "$(deleteRes $RELEASE_URL '/tmp/httpcode.json')" == "204" ]; then
-        printf "\nDel release %s success\n" "$entry"
+        printf "\nDel release %s success" "$entry"
 	else
 	  printf "\nDel release %s failure: %s\n" "$entry" "`jq < /tmp/httpcode.json`"
 	fi
     fi
 
-    if [ "${ISTAG}" == "YES" -o -z $RELEASE_URL ]; then
+    if [ "${ISTAG}" == "YES" -o -z "$RELEASE_URL" ]; then
 	if [ "$(deleteRes "https://api.github.com/repos/${GITHUB_REPOSITORY}/git/refs/tags/$entry" '/tmp/httpcode.json')" == "204" ]; then
-	  printf "\nDel tag %s success\n" "$entry"
+	  printf "\nDel tag %s success" "$entry"
 	else
 	  printf "\nDel tag %s failure: %s\n" "$entry" "`jq < /tmp/httpcode.json`"
 	fi
@@ -75,7 +75,7 @@ else
 
   for entry in "$(jq -r '.[].url' < "/tmp/allres.json")"; do
     if [ "$(deleteRes $entry '/tmp/httpcode.json')" == "204" ]; then
-	printf "\nDel release %s success\n" "$entry"
+	printf "\nDel release %s success" "$entry"
     else
 	printf "\nDel release %s failure: %s\n" "$entry" "`jq < /tmp/httpcode.json`"
     fi
@@ -84,7 +84,7 @@ else
   if [ ${ISTAG} == "YES" ]; then
     for entry in "`cat '/tmp/alltags.json'`"; do
 	if [ "$(deleteRes "https://api.github.com/repos/${GITHUB_REPOSITORY}/git/refs/tags/$entry" '/tmp/httpcode.json')" == "204" ]; then
-	  printf "\nDel tag %s success\n" "$entry"
+	  printf "\nDel tag %s success" "$entry"
 	else
 	  printf "\nDel tag %s failure: %s\n" "$entry" "`jq < /tmp/httpcode.json`"
 	fi
@@ -94,11 +94,11 @@ else
   for entry in ${NAME}; do
     [ -n "$(echo ${NAME} | grep "all")" -o -n "$(echo ${NAME} | grep "ALL")" ] && continue
     if [ "$(deleteRes "https://api.github.com/repos/${GITHUB_REPOSITORY}/git/refs/tags/$entry" '/tmp/httpcode.json')" == "204" ]; then
-	  printf "\nDel tag %s success\n" "$entry"
+	  printf "\nDel tag %s success" "$entry"
 	else
 	  printf "\nDel tag %s failure: %s\n" "$entry" "`jq < /tmp/httpcode.json`"
 	fi
   done
 fi
 
->&2 echo "\nAll done."
+>&2 printf "\n\nAll done."
