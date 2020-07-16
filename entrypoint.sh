@@ -29,7 +29,7 @@ ISTAG="$(echo ${ISTAG} | tr -d \")"
 
 BASE_URL="https://api.github.com/repos/${GITHUB_REPOSITORY}/releases"
 
-if [[ ${NAME} != *"all"* ]] || [[ ${NAME} != *"ALL"* ]]; then
+if [[ "${NAME}" != *"all"* ]] || [[ "${NAME}" != *"ALL"* ]]; then
   BASE_URL=${BASE_URL}/tags
   for entry in "$(echo NAME | tr ' ' '\n')"; do
     RELEASE_URL="$(curl -sS -H "Authorization: token ${TOKEN}" \
