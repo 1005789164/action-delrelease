@@ -32,7 +32,7 @@ BASE_URL="https://api.github.com/repos/${GITHUB_REPOSITORY}/releases"
 
 if [[ "${NAME}" != *"all"* ]] || [[ "${NAME}" != *"ALL"* ]]; then
   BASE_URL=${BASE_URL}/tags
-  for entry in ${NAME}; do
+  for entry in $(echo ${NAME}); do
     RELEASE_URL="$(curl -sS -H "Authorization: token ${TOKEN}" \
       ${BASE_URL}/$entry | jq -r '.url | select(. != null)')"
     curl -sS -H "Authorization: token ${TOKEN}" \
