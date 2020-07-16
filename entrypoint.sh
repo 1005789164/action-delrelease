@@ -31,13 +31,15 @@ BASE_URL="https://api.github.com/repos/${GITHUB_REPOSITORY}/releases"
 
 if [[ "${NAME}" != *"all"* ]] || [[ "${NAME}" != *"ALL"* ]]; then
   BASE_URL=${BASE_URL}/tags
+  printf "\n111111111111111111111111111111\n\n"
   for entry in "$(echo ${NAME} | tr ' ' '\n')"; do
+  printf "\2222222222222222222222222\n\n"
     RELEASE_URL="$(curl -sS -H "Authorization: token ${TOKEN}" \
       ${BASE_URL}/$entry | jq -r '.url | select(. != null)')"
     curl -sS -H "Authorization: token ${TOKEN}" \
     -X DELETE \
     $RELEASE_URL
-    
+
     if [ ${ISTAG} == "yes" ] || [ ${ISTAG} == "YES" ]; then
       curl -sS -H "Authorization: token ${TOKEN}" \
       -X DELETE \
@@ -61,7 +63,7 @@ else
     -X DELETE \
     $entry
   done
-  
+
   if [ ${ISTAG} == "yes" ] || [ ${ISTAG} == "YES" ]; then
     for entry in "$(cat "/tmp/alltags.json" | tr ' ' '\n')"; do
       curl -sS -H "Authorization: token ${TOKEN}" \
