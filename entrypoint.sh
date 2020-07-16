@@ -58,7 +58,7 @@ else
     exit 1
   fi
 
-  jq '.tag_name' > /tmp/alltags.json < "/tmp/allres.json"
+  jq '.[].tag_name' > /tmp/alltags.json < "/tmp/allres.json"
   for entry in "$(jq '.url' < "/tmp/allres.json" | tr ' ' '\n')"; do
     curl -sS -H "Authorization: token ${TOKEN}" \
     -X DELETE \
