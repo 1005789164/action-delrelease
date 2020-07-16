@@ -33,7 +33,6 @@ BASE_URL="https://api.github.com/repos/${GITHUB_REPOSITORY}/releases"
 
 function deleteRes()
 {
-    ehoc 'test'
     CODE="$(curl -sS -H "Authorization: token ${TOKEN}" -X DELETE \
 	--write-out "%{http_code}" -o $2 \
 	$1)"
@@ -74,7 +73,6 @@ else
 
   jq -r '.[].tag_name' > /tmp/alltags.json < "/tmp/allres.json"
 
-  echo 222222222222222
   for entry in "$(jq -r '.[].url' < "/tmp/allres.json")"; do
     if [ "$(deleteRes $entry '/tmp/httpcode.json')" == "204" ]; then
 	printf "\nDel release %s success\n" "$entry"
