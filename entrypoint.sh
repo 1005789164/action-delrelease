@@ -37,6 +37,7 @@ function deleteRes()
 	--write-out "%{http_code}" -o $2 \
 	$1)"
     echo $CODE
+    usleep 700000
 }
 
 if [ -z "$(echo ${NAME} | grep "all")" -a -z "$(echo ${NAME} | grep "ALL")" ]; then
