@@ -35,6 +35,7 @@ if [[ "${NAME}" != *"all"* ]] || [[ "${NAME}" != *"ALL"* ]]; then
   for entry in ${NAME}; do
     RELEASE_URL="$(curl -sS -H "Authorization: token ${TOKEN}" \
       $BASE_URL/$entry | jq -r '.url | select(. != null)')"
+    echo ---$RELEASE_URL---
     if [ -z $RELEASE_URL ]; then
       printf "\nNo release delete tag %s: %s\n" "$entry" "$(curl -sS -H 'Authorization: token ${TOKEN}' \
       -X DELETE \
@@ -50,8 +51,6 @@ if [[ "${NAME}" != *"all"* ]] || [[ "${NAME}" != *"ALL"* ]]; then
       -X DELETE \
       https://api.github.com/repos/${GITHUB_REPOSITORY}/git/refs/tags/$entry)"
     fi
-    echo $BASE_URL
-    echo https://api.github.com/repos/${GITHUB_REPOSITORY}/git/refs/tags/$entry
   done
 else
   CODE="$(curl -sS -H "Authorization: token ${TOKEN}" \
