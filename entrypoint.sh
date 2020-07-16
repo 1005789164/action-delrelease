@@ -31,28 +31,33 @@ ISTAG="$(echo ${ISTAG} | tr -d \" | tr '[a-z]' '[A-Z]')"
 
 BASE_URL="https://api.github.com/repos/${GITHUB_REPOSITORY}/releases"
 
+
+deleteRes(){
+    CODE="$(curl -sS -H "Authorization: token ${TOKEN}" -X DELETE \
+	--write-out "%{http_code}" -o "$2" \
+	$1)"
+    echo $CODE
+}
+
+
 if [[ "${NAME}" != *"all"* ]] || [[ "${NAME}" != *"ALL"* ]]; then
   BASE_URL=$BASE_URL/tags
   for entry in ${NAME}; do
     RELEASE_URL="$(curl -sS -H "Authorization: token ${TOKEN}" \
       $BASE_URL/$entry | jq -r '.url | select(. != null)')"
     if [ -n $RELEASE_URL ]; then
-      CODE="$(curl -sS -H "Authorization: token ${TOKEN}" -X DELETE \
-        $RELEASE_URL | tr ' ' '\n')"
-      if [ -z $CODE ]; then
+      if [ "deleteRes $RELEASE_URL '/tmp/code.json'" == "204" ]; then
         printf "\nDel release %s success\n" "$entry"
 	else
-	  printf "\nDel release %s failure: %s\n" "$entry" "$CODE"
+	  printf "\nDel release %s failure: %s\n" "$entry" "`jq < /tmp/code.json`"
 	fi
     fi
 
     if [ "${ISTAG}" == "YES" -o -z $RELEASE_URL ]; then
-      CODE="$(curl -sS -H "Authorization: token ${TOKEN}" -X DELETE \
-        https://api.github.com/repos/${GITHUB_REPOSITORY}/git/refs/tags/$entry | tr ' ' '\n')"
-	if [ -z $CODE ]; then
+	if [ "deleteRes "https://api.github.com/repos/${GITHUB_REPOSITORY}/git/refs/tags/$entry" '/tmp/code.json'" == "204" ]; then
 	  printf "\nDel tag %s success\n" "$entry"
 	else
-	  printf "\nDel tag %s success: %s\n" "$entry" "$CODE"
+	  printf "\nDel tag %s success: %s\n" "$entry" "`jq < /tmp/code.json`"
 	fi
     fi
   done
@@ -68,19 +73,33 @@ else
   fi
 
   jq -r '.[].tag_name' > /tmp/alltags.json < "/tmp/allres.json"
-  for entry in "$(jq -r '.[].url' < "/tmp/allres.json" | tr ' ' '\n')"; do
-    printf "\nDel release %s: %s\n" "$entry" "$(curl -sS -H 'Authorization: token ${TOKEN}' \
-    -X DELETE \
-    $entry)"
+
+  for entry in "$(jq -r '.[].url' < "/tmp/allres.json")"; do
+    if [ "deleteRes $entry '/tmp/code.json'" == "204" ]; then
+	printf "\nDel release %s success\n" "$entry"
+    else
+	printf "\nDel release %s failure: %s\n" "$entry" "`jq < /tmp/code.json`"
+    fi
   done
 
   if [ ${ISTAG} == "YES" ]; then
-    for entry in "$(cat "/tmp/alltags.json" | tr ' ' '\n')"; do
-      printf "\nDel tag %s: %s\n" "$entry" "$(curl -sS -H 'Authorization: token ${TOKEN}' \
-      -X DELETE \
-      https://api.github.com/repos/${GITHUB_REPOSITORY}/git/refs/tags/$entry)"
+    for entry in "`cat '/tmp/alltags.json'`"; do
+	if [ "deleteRes "https://api.github.com/repos/${GITHUB_REPOSITORY}/git/refs/tags/$entry" '/tmp/code.json'" == "204" ]; then
+	  printf "\nDel tag %s success\n" "$entry"
+	else
+	  printf "\nDel tag %s success: %s\n" "$entry" "`jq < /tmp/code.json`"
+	fi
     done
   fi
+
+  for entry in ${NAME}; do
+    [[ "$entry" == *"all"* ]] || [[ "$entry" == *"ALL"* ]] && continue
+    if [ "deleteRes "https://api.github.com/repos/${GITHUB_REPOSITORY}/git/refs/tags/$entry" '/tmp/code.json'" == "204" ]; then
+	  printf "\nDel tag %s success\n" "$entry"
+	else
+	  printf "\nDel tag %s success: %s\n" "$entry" "`jq < /tmp/code.json`"
+	fi
+  done
 fi
 
 >&2 echo "All done."
