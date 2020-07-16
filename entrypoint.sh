@@ -46,7 +46,7 @@ if [ -z "$(echo ${NAME} | grep "all")" -a -z "$(echo ${NAME} | grep "ALL")" ]; t
     RELEASE_URL="$(curl -sS -H "Authorization: token ${TOKEN}" \
       $BASE_URL/$entry | jq -r '.url | select(. != null)')"
     if [ -n $RELEASE_URL ]; then
-      if [ "deleteRes $RELEASE_URL '/tmp/httpcode.json'" == "204" ]; then
+      if [ "$(deleteRes $RELEASE_URL '/tmp/httpcode.json')" == "204" ]; then
         printf "\nDel release %s success\n" "$entry"
 	else
 	  printf "\nDel release %s failure: %s\n" "$entry" "`jq < /tmp/httpcode.json`"
@@ -54,7 +54,7 @@ if [ -z "$(echo ${NAME} | grep "all")" -a -z "$(echo ${NAME} | grep "ALL")" ]; t
     fi
 
     if [ "${ISTAG}" == "YES" -o -z $RELEASE_URL ]; then
-	if [ "deleteRes "https://api.github.com/repos/${GITHUB_REPOSITORY}/git/refs/tags/$entry" '/tmp/httpcode.json'" == "204" ]; then
+	if [ "$(deleteRes "https://api.github.com/repos/${GITHUB_REPOSITORY}/git/refs/tags/$entry" '/tmp/httpcode.json')" == "204" ]; then
 	  printf "\nDel tag %s success\n" "$entry"
 	else
 	  printf "\nDel tag %s failure: %s\n" "$entry" "`jq < /tmp/httpcode.json`"
@@ -76,7 +76,7 @@ else
 
   echo 222222222222222
   for entry in "$(jq -r '.[].url' < "/tmp/allres.json")"; do
-    if [ "deleteRes $entry '/tmp/httpcode.json'" == "204" ]; then
+    if [ "$(deleteRes $entry '/tmp/httpcode.json')" == "204" ]; then
 	printf "\nDel release %s success\n" "$entry"
     else
 	printf "\nDel release %s failure: %s\n" "$entry" "`jq < /tmp/httpcode.json`"
@@ -85,7 +85,7 @@ else
 
   if [ ${ISTAG} == "YES" ]; then
     for entry in "`cat '/tmp/alltags.json'`"; do
-	if [ "deleteRes "https://api.github.com/repos/${GITHUB_REPOSITORY}/git/refs/tags/$entry" '/tmp/httpcode.json'" == "204" ]; then
+	if [ "$(deleteRes "https://api.github.com/repos/${GITHUB_REPOSITORY}/git/refs/tags/$entry" '/tmp/httpcode.json')" == "204" ]; then
 	  printf "\nDel tag %s success\n" "$entry"
 	else
 	  printf "\nDel tag %s failure: %s\n" "$entry" "`jq < /tmp/httpcode.json`"
@@ -95,7 +95,7 @@ else
 
   for entry in ${NAME}; do
     [ -n "$(echo ${NAME} | grep "all")" -o -n "$(echo ${NAME} | grep "ALL")" ] && continue
-    if [ "deleteRes "https://api.github.com/repos/${GITHUB_REPOSITORY}/git/refs/tags/$entry" '/tmp/httpcode.json'" == "204" ]; then
+    if [ "$(deleteRes "https://api.github.com/repos/${GITHUB_REPOSITORY}/git/refs/tags/$entry" '/tmp/httpcode.json')" == "204" ]; then
 	  printf "\nDel tag %s success\n" "$entry"
 	else
 	  printf "\nDel tag %s failure: %s\n" "$entry" "`jq < /tmp/httpcode.json`"
