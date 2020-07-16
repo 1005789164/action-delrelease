@@ -29,11 +29,12 @@ ISTAG="$(echo ${ISTAG} | tr -d \")"
 
 BASE_URL="https://api.github.com/repos/${GITHUB_REPOSITORY}/releases"
 
+printf "\n000000000000000000000000000\n\n"
 if [[ "${NAME}" != *"all"* ]] || [[ "${NAME}" != *"ALL"* ]]; then
   BASE_URL=${BASE_URL}/tags
   printf "\n111111111111111111111111111111\n\n"
   for entry in "$(echo ${NAME} | tr ' ' '\n')"; do
-  printf "\2222222222222222222222222\n\n"
+  printf "\n2222222222222222222222222\n\n"
     RELEASE_URL="$(curl -sS -H "Authorization: token ${TOKEN}" \
       ${BASE_URL}/$entry | jq -r '.url | select(. != null)')"
     curl -sS -H "Authorization: token ${TOKEN}" \
