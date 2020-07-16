@@ -33,6 +33,7 @@ BASE_URL="https://api.github.com/repos/${GITHUB_REPOSITORY}/releases"
 
 
 deleteRes(){
+	echo $1---$2
     CODE="$(curl -sS -H "Authorization: token ${TOKEN}" -X DELETE \
 	--write-out "%{http_code}" -o "$2" \
 	$1)"
