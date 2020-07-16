@@ -1,5 +1,13 @@
 #!/bin/sh -l
 
+function deleteRes()
+{
+    CODE="$(curl -sS -H "Authorization: token ${TOKEN}" -X DELETE \
+	--write-out "%{http_code}" -o $2 \
+	$1)"
+    echo $CODE
+}
+
 set -e
 
 #
@@ -30,16 +38,6 @@ fi
 ISTAG="$(echo ${ISTAG} | tr -d \" | tr '[a-z]' '[A-Z]')"
 
 BASE_URL="https://api.github.com/repos/${GITHUB_REPOSITORY}/releases"
-
-
-function deleteRes()
-{
-    CODE="$(curl -sS -H "Authorization: token ${TOKEN}" -X DELETE \
-	--write-out "%{http_code}" -o $2 \
-	$1)"
-    echo $CODE
-}
-
 
 if [ -z "$(echo ${NAME} | grep "all")" -a -z "$(echo ${NAME} | grep "ALL")" ]; then
   BASE_URL=$BASE_URL/tags
